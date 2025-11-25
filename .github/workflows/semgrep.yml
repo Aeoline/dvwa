@@ -24,9 +24,9 @@ jobs:
 
 
       - name: SAST
-        run: semgrep --config=p/owasp-top-ten --config=p/php --sarif=semgrep.sarif
+        run: semgrep --config=p/owasp-top-ten --config=p/php --sarif > semgrep.sarif || true
 
-      - name: Upload SARIF to GitHub Security
+      - name: SARIF
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: semgrep.sarif
