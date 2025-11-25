@@ -1,0 +1,33 @@
+name: Semgrep SAST & SCA
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  semgrep:
+    name: Run Semgrep SAST + SCA
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Semgrep
+        run: |
+          pip install semgrep
+
+      - name: SAST 
+        run: |
+          semgrep scan --config=p/owasp-top-ten --config=p/php --error
+
+      - name: SCA
+        run: |
+          semgrep supply-chain scan --json > sca-report.json
+
+      - name: Upload SCA report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sca-report
+          path: sca-report.json
