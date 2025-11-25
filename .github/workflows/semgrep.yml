@@ -29,7 +29,7 @@ jobs:
           semgrep scan --config=p/owasp-top-ten --config=p/php --error
 
       - name: Semgrep SCA
-        working-directory: dvwa
+        working-directory: vulnerabilities/api
         run: semgrep supply-chain scan --json > sca-report.json
 
 
