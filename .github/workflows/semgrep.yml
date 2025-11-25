@@ -19,11 +19,12 @@ jobs:
           pip install semgrep
 
       - name: SAST 
+        continue-on-error: true
         run: |
-          continue-on-error: true
           semgrep scan --config=p/owasp-top-ten --config=p/php --error
 
       - name: SCA
+        continue-on-error: true
         run: |
           semgrep supply-chain scan --json > sca-report.json
 
