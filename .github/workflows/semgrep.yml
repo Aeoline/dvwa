@@ -14,9 +14,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Composer
+        run: |
+          sudo apt-get update && sudo apt-get install -y composer
+
       - name: Semgrep
         run: |
           pip install semgrep
+
 
       - name: SAST 
         continue-on-error: true
@@ -27,6 +32,10 @@ jobs:
         continue-on-error: true
         run: |
           semgrep supply-chain scan --json > sca-report.json
+
+      - name: Debug SCA
+        run: semgrep supply-chain scan
+
 
       - name: Upload SCA report
         uses: actions/upload-artifact@v4
