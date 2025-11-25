@@ -29,13 +29,5 @@ jobs:
           semgrep scan --config=p/owasp-top-ten --config=p/php --error
 
       - name: SCA
-        continue-on-error: true
-        run: |
-          semgrep supply-chain scan --json > sca-report.json
-
-
-      - name: Upload SCA report
-        uses: actions/upload-artifact@v4
-        with:
-          name: sca-report
-          path: sca-report.json
+        working-directory: vulnerabilities/api
+        run: semgrep supply-chain scan --json > sca-report.json || true
