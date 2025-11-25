@@ -1,4 +1,4 @@
-name: Semgrep SAST & SCA
+name: Security Pipeline
 
 on:
   push:
@@ -7,33 +7,39 @@ on:
 
 permissions:
   security-events: write
+  contents: read
 
 jobs:
-  semgrep:
-    name: Run Semgrep SAST + SCA
+  security-scan:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Composer
-        run: |
-          sudo apt-get update && sudo apt-get install -y composer
+      - name: Build Docker image
+        run: docker build -t dvwa:latest .
 
-      - name: Semgrep
-        run: |
-          pip install semgrep
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: dvwa:latest
+          severity: HIGH,CRITICAL
+          exit-code: 0 
+          format: table
+
+      - name: Install Semgrep
+        run: pip install semgrep
 
 
-      - name: SAST
-        run: semgrep --config=p/owasp-top-ten --config=p/php --sarif > semgrep.sarif || true
+      - name: SAST Scan
+        run: semgrep scan --config=p/owasp-top-ten --config=p/php --sarif > semgrep.sarif || true
 
-      - name: SARIF
+      - name: Upload SARIF to GitHub
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
 
-      - name: SCA
+      - name: SCA Scan
         working-directory: vulnerabilities/api
-        run: semgrep supply-chain scan --json > sca-report.json || true
+        run: semgrep scan --supply-chain --json > sca-report.json || true
