@@ -5,6 +5,9 @@ on:
     branches: ["main"]
   pull_request:
 
+permissions:
+  security-events: write
+
 jobs:
   semgrep:
     name: Run Semgrep SAST + SCA
