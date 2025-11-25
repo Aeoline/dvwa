@@ -28,13 +28,13 @@ jobs:
         run: |
           semgrep scan --config=p/owasp-top-ten --config=p/php --error
 
-      - name: SCA
-        continue-on-error: true
-        run: |
-          semgrep supply-chain scan --json > sca-report.json
+      - name: Semgrep SCA
+        working-directory: dvwa
+        run: semgrep supply-chain scan --json > sca-report.json
+
 
       - name: Debug SCA
-        run: semgrep supply-chain scan
+        run: semgrep supply-chain scan -v
 
 
       - name: Upload SCA report
